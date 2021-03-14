@@ -123,11 +123,6 @@ public class BuildingGenerator : MonoBehaviour
         camera.transform.position += new Vector3(0, 0, -30);
     }
 
-    private void RandomizeMeasurements()
-    {
-        throw new System.NotImplementedException();
-    }
-
     private Face CreateDoor(ref Vector3[] vertices)
     {
         //Door will be between 25% and 75% of width
