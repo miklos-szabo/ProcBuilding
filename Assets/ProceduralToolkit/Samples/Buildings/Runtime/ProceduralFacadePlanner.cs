@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProceduralToolkit.Buildings;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ProceduralToolkit.Samples.Buildings
 {
@@ -39,14 +40,16 @@ namespace ProceduralToolkit.Samples.Buildings
                 bool leftIsConvex = Geometry.GetAngle(b, a, aNext) <= 180;
                 bool rightIsConvex = Geometry.GetAngle(bPrevious, b, a) <= 180;
 
-                if (i == 0)
-                {
-                    layouts.Add(PlanEntranceFacade(width, config.floors, config.entranceInterval, config.hasAttic, leftIsConvex, rightIsConvex));
-                }
-                else
-                {
-                    layouts.Add(PlanNormalFacade(width, config.floors, config.hasAttic, leftIsConvex, rightIsConvex));
-                }
+                // if (i == 0)
+                // {
+                //     layouts.Add(PlanEntranceFacade(width, config.floors, config.entranceInterval, config.hasAttic, leftIsConvex, rightIsConvex));
+                // }
+                // else
+                // {
+                //     layouts.Add(PlanNormalFacade(width, config.floors, config.hasAttic, leftIsConvex, rightIsConvex));
+                // }
+                layouts.Add(PlanNormalFacade(width, config.floors, config.hasAttic, leftIsConvex, rightIsConvex));
+
             }
             return layouts;
         }
@@ -69,12 +72,12 @@ namespace ProceduralToolkit.Samples.Buildings
             constructors[PanelType.Entrance] = new List<Func<ILayoutElement>>
             {
                 () => new ProceduralEntrance(palette.wallColor, palette.doorColor),
-                () => new ProceduralEntranceRoofed(palette.wallColor, palette.doorColor, palette.roofColor)
+                //() => new ProceduralEntranceRoofed(palette.wallColor, palette.doorColor, palette.roofColor)
             };
             constructors[PanelType.EntranceWindow] = new List<Func<ILayoutElement>>
             {
                 () => new ProceduralEntranceWindow(palette.wallColor, palette.frameColor, palette.glassColor),
-                () => new ProceduralWindow(palette.wallColor, palette.frameColor, palette.glassColor)
+                //() => new ProceduralWindow(palette.wallColor, palette.frameColor, palette.glassColor)
             };
             constructors[PanelType.EntranceWallLast] = new List<Func<ILayoutElement>>
             {
@@ -95,9 +98,10 @@ namespace ProceduralToolkit.Samples.Buildings
         private ILayout PlanNormalFacade(float facadeWidth, int floors, bool hasAttic, bool leftIsConvex, bool rightIsConvex)
         {
             List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
-            bool hasBalconies = RandomE.Chance(0.5f);
+            //bool hasBalconies = RandomE.Chance(0.5f);
+            bool hasBalconies = false;
 
-            var vertical = CreateNormalFacadeVertical(panelSizes, 0, panelSizes.Count, floors, hasAttic, hasBalconies);
+            var vertical = CreateNormalFacadeVertical(panelSizes, 0, panelSizes.Count, floors, hasAttic, hasBalconies, facadeWidth);
             if (remainder > Geometry.Epsilon)
             {
                 return new HorizontalLayout
@@ -110,49 +114,50 @@ namespace ProceduralToolkit.Samples.Buildings
             return vertical;
         }
 
-        private ILayout PlanEntranceFacade(float facadeWidth, int floors, float entranceInterval, bool hasAttic, bool leftIsConvex,
-            bool rightIsConvex)
-        {
-            List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
-            bool hasBalconies = RandomE.Chance(0.5f);
-
-            commonConstructors[PanelType.Entrance] = constructors[PanelType.Entrance].GetRandom();
-            commonConstructors[PanelType.EntranceWindow] = constructors[PanelType.EntranceWindow].GetRandom();
-            commonConstructors[PanelType.Wall] = constructors[PanelType.Wall].GetRandom();
-
-            var horizontal = new HorizontalLayout();
-
-            bool hasRemainder = remainder > Geometry.Epsilon;
-            if (hasRemainder)
-            {
-                horizontal.Add(CreateBufferWallVertical(remainder/2, floors, hasAttic));
-            }
-
-            int entranceCount = Mathf.Max(Mathf.FloorToInt(facadeWidth/entranceInterval) - 1, 1);
-            int entranceIndexInterval = (panelSizes.Count - entranceCount)/(entranceCount + 1);
-
-            int lastEntranceIndex = -1;
-            for (int i = 0; i < entranceCount; i++)
-            {
-                int entranceIndex = (i + 1)*entranceIndexInterval + i;
-
-                horizontal.Add(CreateNormalFacadeVertical(panelSizes, lastEntranceIndex + 1, entranceIndex, floors, hasAttic, hasBalconies));
-
-                horizontal.Add(CreateEntranceVertical(sizeValues[panelSizes[entranceIndex]], floors, hasAttic));
-
-                if (i == entranceCount - 1)
-                {
-                    horizontal.Add(CreateNormalFacadeVertical(panelSizes, entranceIndex + 1, panelSizes.Count, floors, hasAttic, hasBalconies));
-                }
-
-                lastEntranceIndex = entranceIndex;
-            }
-            if (hasRemainder)
-            {
-                horizontal.Add(CreateBufferWallVertical(remainder/2, floors, hasAttic));
-            }
-            return horizontal;
-        }
+        // private ILayout PlanEntranceFacade(float facadeWidth, int floors, float entranceInterval, bool hasAttic, bool leftIsConvex,
+        //     bool rightIsConvex)
+        // {
+        //     List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
+        //     //bool hasBalconies = RandomE.Chance(0.5f);
+        //     bool hasBalconies = false;
+        //
+        //     commonConstructors[PanelType.Entrance] = constructors[PanelType.Entrance].GetRandom();
+        //     commonConstructors[PanelType.EntranceWindow] = constructors[PanelType.EntranceWindow].GetRandom();
+        //     commonConstructors[PanelType.Wall] = constructors[PanelType.Wall].GetRandom();
+        //
+        //     var horizontal = new HorizontalLayout();
+        //
+        //     bool hasRemainder = remainder > Geometry.Epsilon;
+        //     if (hasRemainder)
+        //     {
+        //         horizontal.Add(CreateBufferWallVertical(remainder/2, floors, hasAttic));
+        //     }
+        //
+        //     int entranceCount = Mathf.Max(Mathf.FloorToInt(facadeWidth/entranceInterval) - 1, 1);
+        //     int entranceIndexInterval = (panelSizes.Count - entranceCount)/(entranceCount + 1);
+        //
+        //     int lastEntranceIndex = -1;
+        //     for (int i = 0; i < entranceCount; i++)
+        //     {
+        //         int entranceIndex = (i + 1)*entranceIndexInterval + i;
+        //
+        //         horizontal.Add(CreateNormalFacadeVertical(panelSizes, lastEntranceIndex + 1, entranceIndex, floors, hasAttic, hasBalconies));
+        //
+        //         horizontal.Add(CreateEntranceVertical(sizeValues[panelSizes[entranceIndex]], floors, hasAttic));
+        //
+        //         if (i == entranceCount - 1)
+        //         {
+        //             horizontal.Add(CreateNormalFacadeVertical(panelSizes, entranceIndex + 1, panelSizes.Count, floors, hasAttic, hasBalconies));
+        //         }
+        //
+        //         lastEntranceIndex = entranceIndex;
+        //     }
+        //     if (hasRemainder)
+        //     {
+        //         horizontal.Add(CreateBufferWallVertical(remainder/2, floors, hasAttic));
+        //     }
+        //     return horizontal;
+        // }
 
         private VerticalLayout CreateBufferWallVertical(float width, int floors, bool hasAttic)
         {
@@ -168,12 +173,16 @@ namespace ProceduralToolkit.Samples.Buildings
             return vertical;
         }
 
-        private VerticalLayout CreateNormalFacadeVertical(List<PanelSize> panelSizes, int from, int to, int floors, bool hasAttic, bool hasBalconies)
+        private VerticalLayout CreateNormalFacadeVertical(List<PanelSize> panelSizes, int from, int to, int floors, bool hasAttic, bool hasBalconies, float width)
         {
             var vertical = new VerticalLayout();
-            vertical.Add(CreateHorizontal(panelSizes, from, to, socleHeight, constructors[PanelType.Socle]));
+            //vertical.Add(CreateHorizontal(panelSizes, from, to, socleHeight, constructors[PanelType.Socle]));
             for (int floorIndex = 0; floorIndex < floors; floorIndex++)
             {
+                if (floorIndex == 0)
+                {
+                    vertical.Add(Construct(constructors[PanelType.Entrance], width, floorHeight));
+                }
                 if (floorIndex == 0 || !hasBalconies)
                 {
                     vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Window]));

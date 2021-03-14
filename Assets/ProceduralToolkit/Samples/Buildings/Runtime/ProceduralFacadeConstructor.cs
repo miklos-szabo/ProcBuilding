@@ -15,6 +15,8 @@ namespace ProceduralToolkit.Samples.Buildings
         private Material roofMaterial = null;
         [SerializeField]
         private Material wallMaterial = null;
+        [SerializeField]
+        private Material doorMaterial = null;
 
         public override void Construct(List<Vector2> foundationPolygon, List<ILayout> layouts, Transform parentTransform)
         {
@@ -61,6 +63,10 @@ namespace ProceduralToolkit.Samples.Buildings
                 else if (draft.name == "Wall")
                 {
                     materials.Add(wallMaterial);
+                }
+                else if (draft.name == "Door")
+                {
+                    materials.Add(doorMaterial);
                 }
             }
             meshRenderer.materials = materials.ToArray();

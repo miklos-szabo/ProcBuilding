@@ -21,7 +21,8 @@ namespace ProceduralToolkit.Samples.Buildings
 
         private const float EntranceDoorWidth = 1.8f;
         private const float EntranceDoorHeight = 2;
-        private const float EntranceDoorThickness = 0.05f;
+        //private const float EntranceDoorThickness = 0.05f;
+        private const float EntranceDoorThickness = 0f;
 
         private const float EntranceRoofDepth = 1;
         private const float EntranceRoofHeight = 0.15f;
@@ -29,15 +30,24 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float EntranceWindowWidthOffset = 0.4f;
         private const float EntranceWindowHeightOffset = 0.3f;
 
-        private const float WindowDepth = 0.1f;
-        protected const float WindowWidthOffset = 0.5f;
+        // private const float WindowDepth = 0.1f;
+        // protected const float WindowWidthOffset = 0.5f;
+        // protected const float WindowBottomOffset = 1;
+        // protected const float WindowTopOffset = 0.3f;
+        // private const float WindowFrameWidth = 0.05f;
+        // private const float WindowSegmentMinWidth = 0.9f;
+        // private const float WindowsillWidthOffset = 0.1f;
+        // private const float WindowsillDepth = 0.15f;
+        // private const float WindowsillThickness = 0.05f;
+        private const float WindowDepth = 0f;
+        protected const float WindowWidthOffset = 0.3f;
         protected const float WindowBottomOffset = 1;
-        protected const float WindowTopOffset = 0.3f;
-        private const float WindowFrameWidth = 0.05f;
-        private const float WindowSegmentMinWidth = 0.9f;
-        private const float WindowsillWidthOffset = 0.1f;
-        private const float WindowsillDepth = 0.15f;
-        private const float WindowsillThickness = 0.05f;
+        protected const float WindowTopOffset = 0f;
+        private const float WindowFrameWidth = 0f;
+        private const float WindowSegmentMinWidth = 0f;
+        private const float WindowsillWidthOffset = 0f;
+        private const float WindowsillDepth = 0f;
+        private const float WindowsillThickness = 0f;
 
         private const float BalconyHeight = 1;
         private const float BalconyDepth = 0.8f;
@@ -95,7 +105,18 @@ namespace ProceduralToolkit.Samples.Buildings
                     window3,
                 },
                 normals = new List<Vector3>(8) {normal, normal, normal, normal, normal, normal, normal, normal},
-                triangles = new List<int>(24) {0, 1, 4, 4, 1, 5, 1, 2, 5, 5, 2, 6, 2, 3, 6, 6, 3, 7, 3, 0, 7, 7, 0, 4,}
+                triangles = new List<int>(24) {0, 1, 4, 4, 1, 5, 1, 2, 5, 5, 2, 6, 2, 3, 6, 6, 3, 7, 3, 0, 7, 7, 0, 4,},
+                uv = new List<Vector2>
+                {
+                    new Vector2(0, 0),
+                    new Vector2(0, 1),
+                    new Vector2(1, 1),
+                    new Vector2(1, 0),
+                    new Vector2(0, 0),
+                    new Vector2(0, 1),
+                    new Vector2(1, 1),
+                    new Vector2(1, 0)
+                }
             };
         }
 
@@ -392,7 +413,7 @@ namespace ProceduralToolkit.Samples.Buildings
             Vector3 roof2 = roof1 - balconyDepth;
             Vector3 roof3 = roof0 - balconyDepth;
             var roof = new MeshDraft {name = WallDraftName}
-                .AddQuad(roof0, roof1, roof2, roof3, Vector3.up)
+                .AddQuad(roof0, roof1, roof2, roof3, Vector3.up, new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0))
                 .Paint(roofColor);
             return roof;
         }
@@ -410,21 +431,21 @@ namespace ProceduralToolkit.Samples.Buildings
             var draft = EntranceBracket(origin, widthVector, heightVector, doorOrigin, doorWidth, doorHeight)
                 .Paint(wallColor);
 
-            var doorFrame = MeshDraft.PartialBox(doorWidth, -doorThickness, doorHeight, Directions.All & ~Directions.ZAxis, false)
-                .Move(doorOrigin + doorWidth/2 + doorHeight/2 + doorThickness/2)
-                .Paint(doorColor);
-            draft.Add(doorFrame);
+            // var doorFrame = MeshDraft.PartialBox(doorWidth, -doorThickness, doorHeight, Directions.All & ~Directions.ZAxis, false)
+            //     .Move(doorOrigin + doorWidth/2 + doorHeight/2 + doorThickness/2)
+            //     .Paint(doorColor);
+            // draft.Add(doorFrame);
 
-            var door = new MeshDraft().AddQuad(doorOrigin + doorThickness, doorWidth, doorHeight, true)
-                .Paint(doorColor);
-            draft.Add(door);
+            // var door = new MeshDraft().AddQuad(doorOrigin + doorThickness, doorWidth, doorHeight, true)
+            //     .Paint(doorColor);
+            // draft.Add(door);
             return draft;
         }
 
         private static MeshDraft EntranceBracket(Vector3 origin, Vector3 width, Vector3 depth,
             Vector3 innerOrigin, Vector3 innerWidth, Vector3 innerDepth)
         {
-            return new MeshDraft().AddTriangleStrip(new List<Vector3>
+            var retVal = new MeshDraft().AddTriangleStrip(new List<Vector3>
             {
                 innerOrigin,
                 origin,
@@ -435,6 +456,18 @@ namespace ProceduralToolkit.Samples.Buildings
                 innerOrigin + innerWidth,
                 origin + width
             });
+            retVal.uv.AddRange(new List<Vector2>
+            {
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(1, 1),
+                new Vector2(0, 1),
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(1, 1),
+                new Vector2(0, 1)
+            });
+            return retVal;
         }
 
         protected static MeshDraft EntranceRoofed(Vector3 origin, float width, float height, Color wallColor,
@@ -552,6 +585,9 @@ namespace ProceduralToolkit.Samples.Buildings
 
         public override CompoundMeshDraft Construct(Vector2 parentLayoutOrigin)
         {
+            var chance = Random.value < 0.2;
+            if (chance)
+                return new CompoundMeshDraft().Add(Wall(parentLayoutOrigin + origin, width, height, wallColor));
             return Window(parentLayoutOrigin + origin, width, height, WindowWidthOffset, WindowBottomOffset, WindowTopOffset,
                 wallColor, frameColor, glassColor, true);
         }
@@ -612,7 +648,24 @@ namespace ProceduralToolkit.Samples.Buildings
         {
             var entranceDraft = Entrance(parentLayoutOrigin + origin, width, height, wallColor, doorColor);
             entranceDraft.name = WallDraftName;
-            return new CompoundMeshDraft().Add(entranceDraft);
+            
+            float EntranceDoorWidth = 2f;
+            float EntranceDoorHeight = 2f;
+            //private const float EntranceDoorThickness = 0.05f;
+            float EntranceDoorThickness = 0f;
+            
+            Vector3 widthVector = Vector3.right*width;
+            Vector3 heightVector = Vector3.up*height;
+            
+            Vector3 doorWidth = Vector3.right*EntranceDoorWidth;
+            Vector3 doorHeight = Vector3.up*EntranceDoorHeight;
+            Vector3 doorThickness = Vector3.back*EntranceDoorThickness;
+            Vector3 doorOrigin = (Vector3)(parentLayoutOrigin + origin) + widthVector/2 - doorWidth/2;
+            
+            var door = new MeshDraft().AddQuad(doorOrigin + doorThickness, doorWidth, doorHeight, true)
+                .Paint(doorColor);
+            door.name = "Door";
+            return new CompoundMeshDraft().Add(entranceDraft).Add(door);
         }
     }
 
