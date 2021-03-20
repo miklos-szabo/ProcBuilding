@@ -49,6 +49,8 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float WindowsillDepth = 0f;
         private const float WindowsillThickness = 0f;
 
+        private const float MaterialTilingScale = 0.2f;
+
         private const float BalconyHeight = 1;
         private const float BalconyDepth = 0.8f;
         private const float BalconyThickness = 0.1f;
@@ -109,13 +111,13 @@ namespace ProceduralToolkit.Samples.Buildings
                 uv = new List<Vector2>
                 {
                     new Vector2(0, 0),
-                    new Vector2(0, 1),
-                    new Vector2(1, 1),
-                    new Vector2(1, 0),
-                    new Vector2(0, 0),
-                    new Vector2(0, 1),
-                    new Vector2(1, 1),
-                    new Vector2(1, 0)
+                    new Vector2(0, heightVector.magnitude * MaterialTilingScale),
+                    new Vector2(widthVector.magnitude * MaterialTilingScale, heightVector.magnitude * MaterialTilingScale),
+                    new Vector2(widthVector.magnitude * MaterialTilingScale, 0),
+                    new Vector2(WindowWidthOffset * MaterialTilingScale, WindowBottomOffset * MaterialTilingScale),
+                    new Vector2(WindowWidthOffset * MaterialTilingScale, (WindowBottomOffset + innerHeight.magnitude) * MaterialTilingScale),
+                    new Vector2((WindowWidthOffset + innerWidth.magnitude) * MaterialTilingScale, (WindowBottomOffset + innerHeight.magnitude) * MaterialTilingScale),
+                    new Vector2((WindowWidthOffset + innerWidth.magnitude) * MaterialTilingScale, WindowBottomOffset * MaterialTilingScale),
                 }
             };
         }
@@ -458,14 +460,14 @@ namespace ProceduralToolkit.Samples.Buildings
             });
             retVal.uv.AddRange(new List<Vector2>
             {
+                new Vector2(innerOrigin.magnitude * MaterialTilingScale, 0),
                 new Vector2(0, 0),
-                new Vector2(1, 0),
-                new Vector2(1, 1),
-                new Vector2(0, 1),
-                new Vector2(0, 0),
-                new Vector2(1, 0),
-                new Vector2(1, 1),
-                new Vector2(0, 1)
+                new Vector2(innerOrigin.magnitude * MaterialTilingScale, innerDepth.magnitude * MaterialTilingScale),
+                new Vector2(0, depth.magnitude * MaterialTilingScale),
+                new Vector2((innerOrigin.magnitude + innerWidth.magnitude) * MaterialTilingScale, innerDepth.magnitude * MaterialTilingScale),
+                new Vector2(width.magnitude * MaterialTilingScale, depth.magnitude * MaterialTilingScale),
+                new Vector2((innerOrigin.magnitude + innerDepth.magnitude) * MaterialTilingScale, 0),
+                new Vector2(width.magnitude * MaterialTilingScale, 0)
             });
             return retVal;
         }
