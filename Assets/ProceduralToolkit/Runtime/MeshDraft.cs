@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using NUnit.Framework;
+using ProceduralToolkit.LibTessDotNet;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Random = UnityEngine.Random;
 
 namespace ProceduralToolkit
 {
@@ -163,7 +166,7 @@ namespace ProceduralToolkit
         /// <summary>
         /// Adds a quad to the draft
         /// </summary>
-        public MeshDraft AddQuad(Vector3 origin, Vector3 width, Vector3 height, bool calculateNormal)
+        public MeshDraft AddQuad(Vector3 origin, Vector3 width, Vector3 height, bool calculateNormal, bool isWindow = false )
         {
             Vector3 vertex0 = origin;
             Vector3 vertex1 = origin + height;
@@ -172,9 +175,9 @@ namespace ProceduralToolkit
             if (calculateNormal)
             {
                 Vector3 normal = Vector3.Cross(height, width).normalized;
-                return AddQuad(vertex0, vertex1, vertex2, vertex3, normal, normal, normal, normal);
+                return AddQuad(vertex0, vertex1, vertex2, vertex3, normal, normal, normal, normal, isWindow);
             }
-            return _AddQuad(vertex0, vertex1, vertex2, vertex3);
+            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow);
         }
 
         /// <summary>
@@ -208,13 +211,13 @@ namespace ProceduralToolkit
         /// Adds a quad to the draft
         /// </summary>
         public MeshDraft AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,
-            Vector3 normal0, Vector3 normal1, Vector3 normal2, Vector3 normal3)
+            Vector3 normal0, Vector3 normal1, Vector3 normal2, Vector3 normal3, bool isWindow = false)
         {
             normals.Add(normal0);
             normals.Add(normal1);
             normals.Add(normal2);
             normals.Add(normal3);
-            return _AddQuad(vertex0, vertex1, vertex2, vertex3);
+            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow);
         }
 
         /// <summary>
@@ -270,7 +273,7 @@ namespace ProceduralToolkit
             return AddQuad(vertex0, vertex1, vertex2, vertex3, normal0, normal1, normal2, normal3);
         }
 
-        private MeshDraft _AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3)
+        private MeshDraft _AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3, bool isWindow = false)
         {
             triangles.Add(0 + vertices.Count);
             triangles.Add(1 + vertices.Count);
@@ -282,10 +285,30 @@ namespace ProceduralToolkit
             vertices.Add(vertex1);
             vertices.Add(vertex2);
             vertices.Add(vertex3);
-            uv.Add(new Vector2(0, 0)); 
-            uv.Add(new Vector2(0, 1)); 
-            uv.Add(new Vector2(1, 1)); 
-            uv.Add(new Vector2(1, 0));
+
+            if (isWindow)
+            {
+                var xCoords = new List<float>{ 0f, 0.25f, 0.5f, 0.75f, 1f };
+                var yCoords = new List<float>{ 0f, 0.167f, 0.333f, 0.5f, 0.667f, 0.833f, 1f };
+                
+                var lowerLeftXIndex = Random.Range(0, 4); //Less than 4 - cant pick index 4 as left corner
+                var lowerLeftYIndex = Random.Range(0, 6);
+                
+
+                uv.Add(new Vector2(xCoords[lowerLeftXIndex], yCoords[lowerLeftYIndex]));
+                uv.Add(new Vector2(xCoords[lowerLeftXIndex], yCoords[lowerLeftYIndex + 1]));
+                uv.Add(new Vector2(xCoords[lowerLeftXIndex + 1], yCoords[lowerLeftYIndex + 1]));
+                uv.Add(new Vector2(xCoords[lowerLeftXIndex + 1], yCoords[lowerLeftYIndex]));
+            }
+            else
+            {    
+                //If walls
+                uv.Add(new Vector2(0, 0)); 
+                uv.Add(new Vector2(0, 1)); 
+                uv.Add(new Vector2(1, 1)); 
+                uv.Add(new Vector2(1, 0));
+            }
+            
             return this;
         }
 

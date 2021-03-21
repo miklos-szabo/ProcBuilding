@@ -176,7 +176,8 @@ namespace ProceduralToolkit.Samples.Buildings
         {
             var frame = WindowpaneFrame(min, max, frameColor, out Vector3 frameDepth, out Vector3 windowMin, out Vector3 windowWidth, out Vector3 windowHeight);
             var glass = WindowpaneGlass(frameDepth, windowMin, windowWidth, windowHeight, glassColor);
-            return new CompoundMeshDraft().Add(frame).Add(glass);
+            return new CompoundMeshDraft()//.Add(frame)
+                .Add(glass);
         }
 
         private static MeshDraft WindowpaneFrame(Vector3 min, Vector3 max, Color frameColor,
@@ -238,7 +239,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private static MeshDraft WindowpaneGlass(Vector3 frameDepth, Vector3 windowMin, Vector3 windowWidth, Vector3 windowHeight, Color glassColor)
         {
             return new MeshDraft {name = GlassDraftName}
-                .AddQuad(windowMin + frameDepth, windowWidth, windowHeight, true)
+                .AddQuad(windowMin + frameDepth, windowWidth, windowHeight, true, isWindow:true)
                 .Paint(glassColor);
         }
 
@@ -654,7 +655,7 @@ namespace ProceduralToolkit.Samples.Buildings
             float EntranceDoorWidth = 2f;
             float EntranceDoorHeight = 2f;
             //private const float EntranceDoorThickness = 0.05f;
-            float EntranceDoorThickness = 0f;
+            float EntranceDoorThickness = 0.0001f;
             
             Vector3 widthVector = Vector3.right*width;
             Vector3 heightVector = Vector3.up*height;
