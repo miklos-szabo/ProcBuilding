@@ -93,10 +93,15 @@ namespace ProceduralToolkit.Samples.Buildings
                 () => new ProceduralAtticVented(palette.wallColor, palette.socleWindowColor),
                 () => new ProceduralWall(palette.wallColor)
             };
+            constructors[PanelType.ContinuousWindow] = new List<Func<ILayoutElement>>
+            {
+                () => new ProceduralContinuousWindow(palette.wallColor, palette.frameColor, palette.glassColor)
+            };
         }
 
         private ILayout PlanNormalFacade(float facadeWidth, int floors, bool hasAttic, bool leftIsConvex, bool rightIsConvex)
         {
+            CurrentBuilding.SetRandomFacadeType();
             List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
             //bool hasBalconies = RandomE.Chance(0.5f);
             bool hasBalconies = false;
@@ -183,20 +188,76 @@ namespace ProceduralToolkit.Samples.Buildings
                 {
                     vertical.Add(Construct(constructors[PanelType.Entrance], width, floorHeight));
                 }
-                if (floorIndex == 0 || !hasBalconies)
+
+                if (CurrentBuilding.FacadeType == BuildingFacadeType.HorizontalLineMiddle || CurrentBuilding.FacadeType == BuildingFacadeType.Cross)
                 {
-                    vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Window]));
+                    //Middle row doesn't appear
+                    if (floorIndex == floors / 2)
+                        vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Wall]));
+                    else
+                        vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Window]));
                 }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.HorizontalThickLineMiddle || CurrentBuilding.FacadeType == BuildingFacadeType.ThickCross)
+                {
+                    //3 middle rows don't appear
+                    if (floorIndex == floors / 2 || floorIndex == floors / 2 - 1 || floorIndex == floors / 2 + 1)
+                        vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Wall]));
+                    else
+                        vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Window]));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.SWithContGlass)
+                {
+                    var indexes = GetSColumnIndexesForRow(panelSizes.Count, floors, floorIndex);
+                    vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.ContinuousWindow], indexes));
+                }
+                
                 else
-                {
-                    vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Balcony]));
-                }
+                    vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Window]));
+                
+                
+                // else
+                // {
+                //     vertical.Add(CreateHorizontal(panelSizes, from, to, floorHeight, constructors[PanelType.Balcony]));
+                // }
             }
             if (hasAttic)
             {
                 vertical.Add(CreateHorizontal(panelSizes, from, to, atticHeight, constructors[PanelType.Attic]));
             }
             return vertical;
+        }
+
+        private List<int> GetSColumnIndexesForRow(int widthSegments, int heightSegments, int currentHeight)
+        {
+            var widthBreakpoint = Math.Floor(widthSegments * 0.35);
+            var heightBreakpoint = Math.Floor((heightSegments - 1) * 0.35);     // -1: height starts at 0, width starts at 1
+            var indexes = new List<int>();
+
+            if (currentHeight >= heightSegments - 1 - heightBreakpoint)    //Bal felül
+            {
+                for(int i = 0; i < widthSegments; i++)
+                {
+                    if(i + 1 <= widthBreakpoint)
+                        indexes.Add(i);
+                }
+            }
+            else if (currentHeight < heightSegments - 1 - heightBreakpoint && currentHeight > heightBreakpoint)    // Közép
+            {
+                for(int i = 0; i < widthSegments; i++)
+                {
+                    indexes.Add(i);
+                }
+            }
+            else if (currentHeight <= heightBreakpoint)    //Jobb alul
+            {
+                for(int i = 0; i < widthSegments; i++)
+                {
+                    if(i >= widthSegments - widthBreakpoint)
+                        indexes.Add(i);
+                }
+            }
+
+            return indexes;
         }
 
         private VerticalLayout CreateEntranceVertical(float width, int floors, bool hasAttic)
@@ -243,13 +304,65 @@ namespace ProceduralToolkit.Samples.Buildings
             return sizes;
         }
 
-        private HorizontalLayout CreateHorizontal(List<PanelSize> panelSizes, int from, int to, float height, List<Func<ILayoutElement>> constructors)
+        private HorizontalLayout CreateHorizontal(List<PanelSize> panelSizes, int from, int to, float height, List<Func<ILayoutElement>> constructors, List<int> continuousWindowIndexes = null)
         {
             var horizontal = new HorizontalLayout();
             for (int i = from; i < to; i++)
             {
                 float width = sizeValues[panelSizes[i]];
-                horizontal.Add(Construct(constructors, width, height));
+                
+                if (CurrentBuilding.FacadeType == BuildingFacadeType.EmptyMiddleVertical || CurrentBuilding.FacadeType == BuildingFacadeType.Cross)
+                {
+                    // The middle column of windows doesn't appear
+                    if(i == panelSizes.Count / 2)
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                    else
+                        horizontal.Add(Construct(constructors, width, height));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.EmptyThickMiddleVertical || CurrentBuilding.FacadeType == BuildingFacadeType.ThickCross)
+                {
+                    //3 middle columns of windows doesn't appear
+                    if(i == panelSizes.Count / 2 || i == panelSizes.Count / 2 - 1 || i == panelSizes.Count / 2 + 1)
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                    else
+                        horizontal.Add(Construct(constructors, width, height));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.LeftSideEmpty)
+                {
+                    //Windows don't appear on the left side
+                    if(i < panelSizes.Count / 2)
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                    else
+                        horizontal.Add(Construct(constructors, width, height));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.RightSideEmpty)
+                {
+                    //Windows don't appear on the right side
+                    if(i > panelSizes.Count / 2)
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                    else
+                        horizontal.Add(Construct(constructors, width, height));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.MiddleColumnFullGlass)
+                {
+                    // The middle column is full glass
+                    if(i == panelSizes.Count / 2)
+                        horizontal.Add(Construct(this.constructors[PanelType.ContinuousWindow], width, height));
+                    else if(i == panelSizes.Count / 2 - 1 || i == panelSizes.Count / 2 + 1)
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                    else 
+                        horizontal.Add(Construct(constructors, width, height));
+                }
+                else if (CurrentBuilding.FacadeType == BuildingFacadeType.SWithContGlass)
+                {
+                    //Makes an S with continuous glass
+                    if(continuousWindowIndexes != null && continuousWindowIndexes.Contains(i))
+                        horizontal.Add(Construct(this.constructors[PanelType.ContinuousWindow], width, height));
+                    else
+                        horizontal.Add(Construct(this.constructors[PanelType.Wall], width, height));
+                }
+                else
+                    horizontal.Add(Construct(constructors, width, height));
             }
             return horizontal;
         }
@@ -298,6 +411,7 @@ namespace ProceduralToolkit.Samples.Buildings
             Window,
             Balcony,
             Attic,
+            ContinuousWindow,
         }
     }
 }

@@ -239,8 +239,17 @@ namespace ProceduralToolkit.Samples.Buildings
         private static MeshDraft WindowpaneGlass(Vector3 frameDepth, Vector3 windowMin, Vector3 windowWidth, Vector3 windowHeight, Color glassColor)
         {
             return new MeshDraft {name = GlassDraftName}
-                .AddQuad(windowMin + frameDepth, windowWidth, windowHeight, true, isWindow:true)
+                .AddQuad(windowMin + frameDepth, windowWidth, windowHeight, true, isWindow:true, isSingularWindow:true)
                 .Paint(glassColor);
+        }
+
+        public static CompoundMeshDraft ContinuousWindow(Vector3 min, Vector3 width, Vector3 height, Color glassColor)
+        {
+            var compoundDraft = new CompoundMeshDraft();
+            compoundDraft.Add(new MeshDraft {name = GlassDraftName}
+                .AddQuad(min, width, height, true, isWindow:true, isSingularWindow:false))
+                .Paint(glassColor);
+            return compoundDraft;
         }
 
         protected static CompoundMeshDraft Balcony(
@@ -588,11 +597,35 @@ namespace ProceduralToolkit.Samples.Buildings
 
         public override CompoundMeshDraft Construct(Vector2 parentLayoutOrigin)
         {
-            var chance = Random.value < 0.2;
-            if (chance)
-                return new CompoundMeshDraft().Add(Wall(parentLayoutOrigin + origin, width, height, wallColor));
+            if (CurrentBuilding.FacadeType == BuildingFacadeType.MissingSomeWindows)
+            {
+                var chance = Random.value < 0.2;
+                if (chance)
+                    return new CompoundMeshDraft().Add(Wall(parentLayoutOrigin + origin, width, height, wallColor));
+            }
             return Window(parentLayoutOrigin + origin, width, height, WindowWidthOffset, WindowBottomOffset, WindowTopOffset,
                 wallColor, frameColor, glassColor, true);
+        }
+    }
+    
+    public class ProceduralContinuousWindow : ProceduralFacadeElement
+    {
+        private Color wallColor;
+        private Color frameColor;
+        private Color glassColor;
+
+        public ProceduralContinuousWindow(Color wallColor, Color frameColor, Color glassColor)
+        {
+            this.wallColor = wallColor;
+            this.frameColor = frameColor;
+            this.glassColor = glassColor;
+        }
+
+        public override CompoundMeshDraft Construct(Vector2 parentLayoutOrigin)
+        {
+            Vector3 widthVector = Vector3.right*width;
+            Vector3 heightVector = Vector3.up*height;
+            return ContinuousWindow(parentLayoutOrigin + origin, widthVector, heightVector, glassColor);
         }
     }
 
