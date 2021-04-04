@@ -19,7 +19,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float SocleWindowDepth = 0.1f;
         private const float SocleWindowHeightOffset = 0.1f;
 
-        private const float EntranceDoorWidth = 1.8f;
+        private const float EntranceDoorWidth = 2f;
         private const float EntranceDoorHeight = 2;
         //private const float EntranceDoorThickness = 0.05f;
         private const float EntranceDoorThickness = 0f;
@@ -252,6 +252,16 @@ namespace ProceduralToolkit.Samples.Buildings
             return compoundDraft;
         }
 
+        public static CompoundMeshDraft GroundFloorThing(Vector3 min, Vector3 width, Vector3 height)
+        {
+            var compoundDraft = new CompoundMeshDraft();
+            compoundDraft.Add(new MeshDraft {name = WallDraftName}    //Wall below
+                .AddQuad(min, width, 0.5f * Vector3.up, true)).Paint(Color.black);
+            compoundDraft.Add(new MeshDraft {name = CurrentBuilding.GroundFloorType}    //The showcase or thing itself
+                .AddQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
+            return compoundDraft;
+        }
+
         protected static CompoundMeshDraft Balcony(
             Vector3 origin,
             float width,
@@ -440,8 +450,9 @@ namespace ProceduralToolkit.Samples.Buildings
             Vector3 doorThickness = Vector3.back*EntranceDoorThickness;
             Vector3 doorOrigin = origin + widthVector/2 - doorWidth/2;
 
-            var draft = EntranceBracket(origin, widthVector, heightVector, doorOrigin, doorWidth, doorHeight)
-                .Paint(wallColor);
+             var draft = EntranceBracket(origin, widthVector, heightVector, doorOrigin, doorWidth, doorHeight).Paint(wallColor);
+            // var betterOrigin = origin + widthVector / 2 - doorWidth;
+            // var draft = EntranceBracket(betterOrigin, doorWidth * 2, heightVector, doorOrigin, doorWidth, doorHeight).Paint(wallColor);
 
             // var doorFrame = MeshDraft.PartialBox(doorWidth, -doorThickness, doorHeight, Directions.All & ~Directions.ZAxis, false)
             //     .Move(doorOrigin + doorWidth/2 + doorHeight/2 + doorThickness/2)
@@ -626,6 +637,26 @@ namespace ProceduralToolkit.Samples.Buildings
             Vector3 widthVector = Vector3.right*width;
             Vector3 heightVector = Vector3.up*height;
             return ContinuousWindow(parentLayoutOrigin + origin, widthVector, heightVector, glassColor);
+        }
+    }
+    
+    public class ProceduralGroundFloorThing : ProceduralFacadeElement
+    {
+        private Color wallColor;
+        private Color frameColor;
+        private Color glassColor;
+
+        public ProceduralGroundFloorThing(Color wallColor, Color frameColor, Color glassColor)
+        {
+            this.wallColor = wallColor;
+            this.frameColor = frameColor;
+            this.glassColor = glassColor;
+        }
+        public override CompoundMeshDraft Construct(Vector2 parentLayoutOrigin)
+        {
+            Vector3 widthVector = Vector3.right*width;
+            Vector3 heightVector = Vector3.up*height;
+            return GroundFloorThing(parentLayoutOrigin + origin, widthVector, heightVector);
         }
     }
 

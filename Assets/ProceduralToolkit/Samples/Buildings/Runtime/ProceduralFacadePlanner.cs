@@ -13,6 +13,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float floorHeight = 2.5f;
         private const float atticHeight = 1;
         private const float bufferWidth = 2;
+        private const float GroundFloorThingWidth = 5f;
 
         private Dictionary<PanelType, List<Func<ILayoutElement>>> constructors =
             new Dictionary<PanelType, List<Func<ILayoutElement>>>();
@@ -97,11 +98,17 @@ namespace ProceduralToolkit.Samples.Buildings
             {
                 () => new ProceduralContinuousWindow(palette.wallColor, palette.frameColor, palette.glassColor)
             };
+            constructors[PanelType.GroundFloorThing] = new List<Func<ILayoutElement>>
+            {
+                () => new ProceduralGroundFloorThing(palette.wallColor, palette.frameColor, palette.glassColor)
+            };
         }
 
         private ILayout PlanNormalFacade(float facadeWidth, int floors, bool hasAttic, bool leftIsConvex, bool rightIsConvex)
         {
             CurrentBuilding.SetRandomFacadeType();
+            CurrentBuilding.SetRandomGroundFloorType();
+            
             List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
             //bool hasBalconies = RandomE.Chance(0.5f);
             bool hasBalconies = false;
@@ -186,7 +193,7 @@ namespace ProceduralToolkit.Samples.Buildings
             {
                 if (floorIndex == 0)
                 {
-                    vertical.Add(Construct(constructors[PanelType.Entrance], width, floorHeight));
+                    vertical.Add(CreateGroundFloor(width));
                 }
 
                 if (CurrentBuilding.FacadeType == BuildingFacadeType.HorizontalLineMiddle || CurrentBuilding.FacadeType == BuildingFacadeType.Cross)
@@ -258,6 +265,31 @@ namespace ProceduralToolkit.Samples.Buildings
             }
 
             return indexes;
+        }
+
+        private HorizontalLayout CreateGroundFloor(float width)
+        {
+            var doorStartWidth = width / 2 - 2;
+            var numberOfThings = (int)doorStartWidth / 7;    //5 thing, 1+1 sides
+            var separatorWidth = (doorStartWidth - numberOfThings * GroundFloorThingWidth) / (numberOfThings + 1);
+            var horizontal = new HorizontalLayout();
+
+            for (int i = 0; i < numberOfThings; i++)    //Before door
+            {
+                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));    //Separator
+                horizontal.Add(Construct(this.constructors[PanelType.GroundFloorThing], GroundFloorThingWidth, floorHeight));     //Thing
+            }
+            horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
+            
+            horizontal.Add(Construct(constructors[PanelType.Entrance], 4, floorHeight));    //Door - doorwidth = 2 -> 4 space with door separators
+            
+            for (int i = 0; i < numberOfThings; i++)    //After door
+            {
+                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));    //Separator
+                horizontal.Add(Construct(this.constructors[PanelType.GroundFloorThing], GroundFloorThingWidth, floorHeight));     //Thing
+            }
+            horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
+            return horizontal;
         }
 
         private VerticalLayout CreateEntranceVertical(float width, int floors, bool hasAttic)
@@ -412,6 +444,7 @@ namespace ProceduralToolkit.Samples.Buildings
             Balcony,
             Attic,
             ContinuousWindow,
+            GroundFloorThing,
         }
     }
 }

@@ -18,6 +18,8 @@ namespace ProceduralToolkit.Samples.Buildings
         [SerializeField]
         private Material doorMaterial = null;
 
+        [SerializeField] private Material[] groundFloorThings = null;
+
         public override void Construct(List<Vector2> foundationPolygon, List<ILayout> layouts, Transform parentTransform)
         {
             var facadesDraft = new CompoundMeshDraft();
@@ -67,6 +69,15 @@ namespace ProceduralToolkit.Samples.Buildings
                 else if (draft.name == "Door")
                 {
                     materials.Add(doorMaterial);
+                }
+                else
+                {
+                    var split = draft.name.Split('-');
+                    if (split[0] == "GroundFloorThing")
+                    {
+                        var index = int.Parse(split[1]);
+                        materials.Add(groundFloorThings[index]);
+                    }
                 }
             }
             meshRenderer.materials = materials.ToArray();
