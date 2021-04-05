@@ -257,6 +257,7 @@ namespace ProceduralToolkit.Samples.Buildings
             var compoundDraft = new CompoundMeshDraft();
             compoundDraft.Add(new MeshDraft {name = WallDraftName}    //Wall below
                 .AddQuad(min, width, 0.5f * Vector3.up, true)).Paint(Color.black);
+            CurrentBuilding.SetRandomGroundFloorType();    //So that every ground floor thing is different
             compoundDraft.Add(new MeshDraft {name = CurrentBuilding.GroundFloorType}    //The showcase or thing itself
                 .AddQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
             return compoundDraft;

@@ -107,8 +107,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private ILayout PlanNormalFacade(float facadeWidth, int floors, bool hasAttic, bool leftIsConvex, bool rightIsConvex)
         {
             CurrentBuilding.SetRandomFacadeType();
-            CurrentBuilding.SetRandomGroundFloorType();
-            
+
             List<PanelSize> panelSizes = DivideFacade(facadeWidth, leftIsConvex, rightIsConvex, out float remainder);
             //bool hasBalconies = RandomE.Chance(0.5f);
             bool hasBalconies = false;
