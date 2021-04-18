@@ -257,9 +257,12 @@ namespace ProceduralToolkit.Samples.Buildings
             var compoundDraft = new CompoundMeshDraft();
             compoundDraft.Add(new MeshDraft {name = WallDraftName}    //Wall below
                 .AddQuad(min, width, 0.5f * Vector3.up, true)).Paint(Color.black);
+            
             CurrentBuilding.SetRandomGroundFloorType();    //So that every ground floor thing is different
             compoundDraft.Add(new MeshDraft {name = CurrentBuilding.GroundFloorType}    //The showcase or thing itself
-                .AddQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
+                .AddQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up, true, isGroundFloorThing:true)).Paint(Color.blue);
+            compoundDraft.Add(new MeshDraft {name = "TransparentGlass"}    //The glass in front of the thing
+                .AddQuad(min + 0.5f * Vector3.up + 0.001f * Vector3.back, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
             return compoundDraft;
         }
 
@@ -609,12 +612,12 @@ namespace ProceduralToolkit.Samples.Buildings
 
         public override CompoundMeshDraft Construct(Vector2 parentLayoutOrigin)
         {
-            if (CurrentBuilding.FacadeType == BuildingFacadeType.MissingSomeWindows)
-            {
-                var chance = Random.value < 0.2;
-                if (chance)
-                    return new CompoundMeshDraft().Add(Wall(parentLayoutOrigin + origin, width, height, wallColor));
-            }
+            // if (CurrentBuilding.FacadeType == BuildingFacadeType.MissingSomeWindows)
+            // {
+            //     var chance = Random.value < 0.2;
+            //     if (chance)
+            //         return new CompoundMeshDraft().Add(Wall(parentLayoutOrigin + origin, width, height, wallColor));
+            // }
             return Window(parentLayoutOrigin + origin, width, height, WindowWidthOffset, WindowBottomOffset, WindowTopOffset,
                 wallColor, frameColor, glassColor, true);
         }

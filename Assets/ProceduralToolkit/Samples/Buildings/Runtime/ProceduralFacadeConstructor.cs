@@ -16,7 +16,9 @@ namespace ProceduralToolkit.Samples.Buildings
         [SerializeField]
         private Material wallMaterial = null;
         [SerializeField]
-        private Material doorMaterial = null;
+        private Material doorMaterial = null;       
+        [SerializeField]
+        private Material TransparentGlassMaterial = null;
 
         [SerializeField] private Material[] groundFloorThings = null;
 
@@ -69,6 +71,10 @@ namespace ProceduralToolkit.Samples.Buildings
                 else if (draft.name == "Door")
                 {
                     materials.Add(doorMaterial);
+                }
+                else if (draft.name == "TransparentGlass")
+                {
+                    materials.Add(TransparentGlassMaterial);
                 }
                 else
                 {

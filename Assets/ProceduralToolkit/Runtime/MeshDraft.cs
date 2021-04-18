@@ -166,7 +166,7 @@ namespace ProceduralToolkit
         /// <summary>
         /// Adds a quad to the draft
         /// </summary>
-        public MeshDraft AddQuad(Vector3 origin, Vector3 width, Vector3 height, bool calculateNormal, bool isWindow = false, bool isSingularWindow = true )
+        public MeshDraft AddQuad(Vector3 origin, Vector3 width, Vector3 height, bool calculateNormal, bool isWindow = false, bool isSingularWindow = true, bool isGroundFloorThing = false)
         {
             Vector3 vertex0 = origin;
             Vector3 vertex1 = origin + height;
@@ -175,9 +175,9 @@ namespace ProceduralToolkit
             if (calculateNormal)
             {
                 Vector3 normal = Vector3.Cross(height, width).normalized;
-                return AddQuad(vertex0, vertex1, vertex2, vertex3, normal, normal, normal, normal, isWindow, isSingularWindow);
+                return AddQuad(vertex0, vertex1, vertex2, vertex3, normal, normal, normal, normal, isWindow, isSingularWindow, isGroundFloorThing);
             }
-            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow, isSingularWindow);
+            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow, isSingularWindow, isGroundFloorThing);
         }
 
         /// <summary>
@@ -211,13 +211,13 @@ namespace ProceduralToolkit
         /// Adds a quad to the draft
         /// </summary>
         public MeshDraft AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,
-            Vector3 normal0, Vector3 normal1, Vector3 normal2, Vector3 normal3, bool isWindow = false, bool isSingularWindow = true)
+            Vector3 normal0, Vector3 normal1, Vector3 normal2, Vector3 normal3, bool isWindow = false, bool isSingularWindow = true, bool isGroundFloorThing = false)
         {
             normals.Add(normal0);
             normals.Add(normal1);
             normals.Add(normal2);
             normals.Add(normal3);
-            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow, isSingularWindow);
+            return _AddQuad(vertex0, vertex1, vertex2, vertex3, isWindow, isSingularWindow, isGroundFloorThing);
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace ProceduralToolkit
             return AddQuad(vertex0, vertex1, vertex2, vertex3, normal0, normal1, normal2, normal3);
         }
 
-        private MeshDraft _AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3, bool isWindow = false, bool isSingularWindow = true)
+        private MeshDraft _AddQuad(Vector3 vertex0, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3, bool isWindow = false, bool isSingularWindow = true, bool isGroundFloorThing = false)
         {
             triangles.Add(0 + vertices.Count);
             triangles.Add(1 + vertices.Count);
@@ -313,6 +313,16 @@ namespace ProceduralToolkit
                     uv.Add(new Vector2(xCoords[lowerLeftXIndex + 2], yCoords[lowerLeftYIndex + 3]));
                     uv.Add(new Vector2(xCoords[lowerLeftXIndex + 2], yCoords[lowerLeftYIndex]));
                 }
+            }
+            else if (isGroundFloorThing)
+            {
+                //We have a square, but the window is 2x5, wall is 0.5 high, the whole thing is 2.5 high
+                //The square's sides are 5 long
+                uv.Add(new Vector2(0, 0)); // 0.5 / 5 is the wall's height
+                uv.Add(new Vector2(0, 1)); //2.5 / 5 is the thing's height
+                uv.Add(new Vector2(1, 1));
+                uv.Add(new Vector2(1, 0));
+                
             }
             else
             {    
