@@ -318,10 +318,10 @@ namespace ProceduralToolkit
             {
                 //We have a square, but the window is 2x5, wall is 0.5 high, the whole thing is 2.5 high
                 //The square's sides are 5 long
-                uv.Add(new Vector2(0, 0)); // 0.5 / 5 is the wall's height
+                uv.Add(new Vector2(0, 0.2f)); // 0.5 / 5 is the wall's height
                 uv.Add(new Vector2(0, 1)); //2.5 / 5 is the thing's height
                 uv.Add(new Vector2(1, 1));
-                uv.Add(new Vector2(1, 0));
+                uv.Add(new Vector2(1, 0.2f));
                 
             }
             else

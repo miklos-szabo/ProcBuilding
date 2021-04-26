@@ -13,7 +13,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float floorHeight = 2.5f;
         private const float atticHeight = 1;
         private const float bufferWidth = 2;
-        private const float GroundFloorThingWidth = 5f;
+        private const float GroundFloorThingWidth = 2.5f;
 
         private Dictionary<PanelType, List<Func<ILayoutElement>>> constructors =
             new Dictionary<PanelType, List<Func<ILayoutElement>>>();
@@ -269,7 +269,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private HorizontalLayout CreateGroundFloor(float width)
         {
             var doorStartWidth = width / 2 - 2;
-            var numberOfThings = (int)doorStartWidth / 7;    //5 thing, 1+1 sides
+            var numberOfThings = (int)(doorStartWidth / (GroundFloorThingWidth + 1.5));    //thing, .75+.75mes sides
             var separatorWidth = (doorStartWidth - numberOfThings * GroundFloorThingWidth) / (numberOfThings + 1);
             var horizontal = new HorizontalLayout();
 
