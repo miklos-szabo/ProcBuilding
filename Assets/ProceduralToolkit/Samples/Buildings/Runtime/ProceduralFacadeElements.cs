@@ -260,9 +260,9 @@ namespace ProceduralToolkit.Samples.Buildings
             
             CurrentBuilding.SetRandomGroundFloorType();    //So that every ground floor thing is different
             compoundDraft.Add(new MeshDraft {name = CurrentBuilding.GroundFloorType}    //The showcase or thing itself
-                .AddQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up, true, isGroundFloorThing:true)).Paint(Color.blue);
-            compoundDraft.Add(new MeshDraft {name = "TransparentGlass"}    //The glass in front of the thing
-                .AddQuad(min + 0.5f * Vector3.up + 0.001f * Vector3.back, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
+                .AddGroundFloorThingQuad(min + 0.5f * Vector3.up, width, height - 0.5f * Vector3.up)).Paint(Color.blue);
+            // compoundDraft.Add(new MeshDraft {name = "TransparentGlass"}    //The glass in front of the thing
+            //     .AddQuad(min + 0.5f * Vector3.up + 0.001f * Vector3.back, width, height - 0.5f * Vector3.up, true)).Paint(Color.blue);
             return compoundDraft;
         }
 

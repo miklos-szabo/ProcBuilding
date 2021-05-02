@@ -13,7 +13,7 @@ namespace ProceduralToolkit.Samples.Buildings
         private const float floorHeight = 2.5f;
         private const float atticHeight = 1;
         private const float bufferWidth = 2;
-        private const float GroundFloorThingWidth = 2.5f;
+        private const float GroundFloorThingWidth = 2f;
 
         private Dictionary<PanelType, List<Func<ILayoutElement>>> constructors =
             new Dictionary<PanelType, List<Func<ILayoutElement>>>();

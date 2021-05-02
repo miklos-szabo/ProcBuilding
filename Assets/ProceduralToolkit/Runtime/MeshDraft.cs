@@ -318,10 +318,10 @@ namespace ProceduralToolkit
             {
                 //We have a square, but the window is 2x5, wall is 0.5 high, the whole thing is 2.5 high
                 //The square's sides are 5 long
-                uv.Add(new Vector2(0, 0.2f)); // 0.5 / 5 is the wall's height
+                uv.Add(new Vector2(0, 0)); // 0.5 / 2.5 is the wall's height
                 uv.Add(new Vector2(0, 1)); //2.5 / 5 is the thing's height
                 uv.Add(new Vector2(1, 1));
-                uv.Add(new Vector2(1, 0.2f));
+                uv.Add(new Vector2(1, 0)); //y 0.2
                 
             }
             else
@@ -333,6 +333,39 @@ namespace ProceduralToolkit
                 uv.Add(new Vector2(1, 0));
             }
             
+            return this;
+        }
+
+        public MeshDraft AddGroundFloorThingQuad(Vector3 origin, Vector3 width, Vector3 height)
+        {
+            Vector3 vertex0 = origin;
+            Vector3 vertex1 = origin + height;
+            Vector3 vertex2 = origin + height + width;
+            Vector3 vertex3 = origin + width;
+            
+            Vector3 normal = Vector3.Cross(height, width).normalized;
+            triangles.Add(0 + vertices.Count);
+            triangles.Add(2 + vertices.Count);
+            triangles.Add(1 + vertices.Count);
+            triangles.Add(2 + vertices.Count);
+            triangles.Add(3 + vertices.Count);
+            triangles.Add(1 + vertices.Count);
+            vertices.Add(vertex0);
+            vertices.Add(vertex3);
+            vertices.Add(vertex1);
+            vertices.Add(vertex2);
+            normals.Add(normal);
+            normals.Add(normal);
+            normals.Add(normal);
+            normals.Add(normal);
+            
+            uv.Add(new Vector2(0, 0)); 
+            uv.Add(new Vector2(1, 0)); 
+            uv.Add(new Vector2(0, 1)); 
+            uv.Add(new Vector2(1, 1));
+            
+            // GameObject cube = GameObject.Instantiate(Resources.Load("Prefabs/GrounFloorThingPrefab") as GameObject, origin, Quaternion.LookRotation(normal));
+
             return this;
         }
 

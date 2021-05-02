@@ -5,11 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralToolkit.Samples",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralToolkit", "ProceduralToolkit.csproj", "{d8fe0d22-ff6f-b978-68f9-aed13d7d7af1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{6a9881be-c125-3120-3152-fae055cc9c17}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralToolkit.LibTessDotNet", "ProceduralToolkit.LibTessDotNet.csproj", "{cf33afcf-1085-b9e4-f3c4-fdcddc858dfd}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Substance.EditorHelper", "Substance.EditorHelper.csproj", "{2283bede-01bf-9643-583c-05002c65e61d}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{6a9881be-c125-3120-3152-fae055cc9c17}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralToolkit.ClipperLib", "ProceduralToolkit.ClipperLib.csproj", "{c9a82170-f471-680d-0266-d258af819400}"
 EndProject
@@ -41,6 +41,10 @@ Global
 		{d8fe0d22-ff6f-b978-68f9-aed13d7d7af1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{d8fe0d22-ff6f-b978-68f9-aed13d7d7af1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{d8fe0d22-ff6f-b978-68f9-aed13d7d7af1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6a9881be-c125-3120-3152-fae055cc9c17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6a9881be-c125-3120-3152-fae055cc9c17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6a9881be-c125-3120-3152-fae055cc9c17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6a9881be-c125-3120-3152-fae055cc9c17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{cf33afcf-1085-b9e4-f3c4-fdcddc858dfd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{cf33afcf-1085-b9e4-f3c4-fdcddc858dfd}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{cf33afcf-1085-b9e4-f3c4-fdcddc858dfd}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,10 +53,6 @@ Global
 		{2283bede-01bf-9643-583c-05002c65e61d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2283bede-01bf-9643-583c-05002c65e61d}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2283bede-01bf-9643-583c-05002c65e61d}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6a9881be-c125-3120-3152-fae055cc9c17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6a9881be-c125-3120-3152-fae055cc9c17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6a9881be-c125-3120-3152-fae055cc9c17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6a9881be-c125-3120-3152-fae055cc9c17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{c9a82170-f471-680d-0266-d258af819400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{c9a82170-f471-680d-0266-d258af819400}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{c9a82170-f471-680d-0266-d258af819400}.Release|Any CPU.ActiveCfg = Release|Any CPU
