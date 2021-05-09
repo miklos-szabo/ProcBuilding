@@ -50,7 +50,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\ThingGenerator.cs" />
+     <Compile Include="Assets\GroundFloorThingGenerator.cs" />
      <Compile Include="Assets\MainBuildingGen.cs" />
      <Compile Include="Assets\DeprBuildingGenerator.cs" />
      <Compile Include="Assets\CubeMapGenerator.cs" />

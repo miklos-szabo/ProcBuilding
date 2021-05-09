@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ProceduralToolkit.Buildings;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -175,7 +176,7 @@ namespace ProceduralToolkit.Samples.Buildings
             var vertical = new VerticalLayout
             {
                 Construct(constructors[PanelType.Socle], width, socleHeight),
-                CreateVertical(width, floorHeight, floors, commonConstructors[PanelType.Wall])
+                CreateVertical(width, floorHeight, floors, constructors[PanelType.Wall].First())
             };
             if (hasAttic)
             {
@@ -273,10 +274,15 @@ namespace ProceduralToolkit.Samples.Buildings
             var separatorWidth = (doorStartWidth - numberOfThings * GroundFloorThingWidth) / (numberOfThings + 1);
             var horizontal = new HorizontalLayout();
 
+            if (width < 4f)
+            {
+                horizontal.Add(Construct(this.constructors[PanelType.Wall], width, floorHeight));
+                return horizontal;
+            }
+
             for (int i = 0; i < numberOfThings; i++)    //Before door
             {
-                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));    //Separator
-                horizontal.Add(Construct(this.constructors[PanelType.GroundFloorThing], GroundFloorThingWidth, floorHeight));     //Thing
+                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth + GroundFloorThingWidth, floorHeight));    //Separator
             }
             horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
             
@@ -284,8 +290,7 @@ namespace ProceduralToolkit.Samples.Buildings
             
             for (int i = 0; i < numberOfThings; i++)    //After door
             {
-                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));    //Separator
-                horizontal.Add(Construct(this.constructors[PanelType.GroundFloorThing], GroundFloorThingWidth, floorHeight));     //Thing
+                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth + GroundFloorThingWidth, floorHeight));    //Separator
             }
             horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
             return horizontal;
