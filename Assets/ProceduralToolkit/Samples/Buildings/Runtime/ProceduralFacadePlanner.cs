@@ -113,7 +113,7 @@ namespace ProceduralToolkit.Samples.Buildings
             //bool hasBalconies = RandomE.Chance(0.5f);
             bool hasBalconies = false;
 
-            var vertical = CreateNormalFacadeVertical(panelSizes, 0, panelSizes.Count, floors, hasAttic, hasBalconies, facadeWidth);
+            var vertical = CreateNormalFacadeVertical(panelSizes, 0, panelSizes.Count, floors, hasAttic, hasBalconies, facadeWidth, remainder);
             if (remainder > Geometry.Epsilon)
             {
                 return new HorizontalLayout
@@ -173,11 +173,14 @@ namespace ProceduralToolkit.Samples.Buildings
 
         private VerticalLayout CreateBufferWallVertical(float width, int floors, bool hasAttic)
         {
-            var vertical = new VerticalLayout
-            {
-                Construct(constructors[PanelType.Socle], width, socleHeight),
-                CreateVertical(width, floorHeight, floors, constructors[PanelType.Wall].First())
-            };
+            // var vertical = new VerticalLayout
+            // {
+            //     Construct(constructors[PanelType.Socle], width, socleHeight),
+            //     CreateVertical(width, floorHeight, floors, constructors[PanelType.Wall].First())
+            // };
+            var vertical = new VerticalLayout();
+            vertical.Add(Construct(constructors[PanelType.Wall], width, floorHeight * (floors + 1)));
+            
             if (hasAttic)
             {
                 vertical.Add(Construct(constructors[PanelType.Attic], width, atticHeight));
@@ -185,7 +188,7 @@ namespace ProceduralToolkit.Samples.Buildings
             return vertical;
         }
 
-        private VerticalLayout CreateNormalFacadeVertical(List<PanelSize> panelSizes, int from, int to, int floors, bool hasAttic, bool hasBalconies, float width)
+        private VerticalLayout CreateNormalFacadeVertical(List<PanelSize> panelSizes, int from, int to, int floors, bool hasAttic, bool hasBalconies, float width, float remainder)
         {
             var vertical = new VerticalLayout();
             //vertical.Add(CreateHorizontal(panelSizes, from, to, socleHeight, constructors[PanelType.Socle]));
@@ -193,7 +196,7 @@ namespace ProceduralToolkit.Samples.Buildings
             {
                 if (floorIndex == 0)
                 {
-                    vertical.Add(CreateGroundFloor(width));
+                    vertical.Add(CreateGroundFloor(width - remainder));
                 }
 
                 if (CurrentBuilding.FacadeType == BuildingFacadeType.HorizontalLineMiddle || CurrentBuilding.FacadeType == BuildingFacadeType.Cross)
@@ -279,20 +282,25 @@ namespace ProceduralToolkit.Samples.Buildings
                 horizontal.Add(Construct(this.constructors[PanelType.Wall], width, floorHeight));
                 return horizontal;
             }
-
-            for (int i = 0; i < numberOfThings; i++)    //Before door
-            {
-                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth + GroundFloorThingWidth, floorHeight));    //Separator
-            }
-            horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
             
+            horizontal.Add(Construct(this.constructors[PanelType.Wall], doorStartWidth, floorHeight));
             horizontal.Add(Construct(constructors[PanelType.Entrance], 4, floorHeight));    //Door - doorwidth = 2 -> 4 space with door separators
-            
-            for (int i = 0; i < numberOfThings; i++)    //After door
-            {
-                horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth + GroundFloorThingWidth, floorHeight));    //Separator
-            }
-            horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
+            horizontal.Add(Construct(this.constructors[PanelType.Wall], doorStartWidth, floorHeight));
+
+            // for (int i = 0; i < numberOfThings; i++)    //Before door
+            // {
+            //     horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth + GroundFloorThingWidth, floorHeight));    //Separator
+            // }
+            // horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
+            //
+            // horizontal.Add(Construct(constructors[PanelType.Entrance], 4, floorHeight));    //Door - doorwidth = 2 -> 4 space with door separators
+            //
+            // horizontal.Add(Construct(this.constructors[PanelType.Wall], (numberOfThings + 1) * separatorWidth, floorHeight));    //Separator
+            // for (int i = 0; i < numberOfThings; i++)    //After door
+            // {
+            //     
+            // }
+            // horizontal.Add(Construct(this.constructors[PanelType.Wall], separatorWidth, floorHeight));  //Last Separator
             return horizontal;
         }
 
